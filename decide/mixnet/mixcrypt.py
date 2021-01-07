@@ -152,13 +152,14 @@ class MixCrypt:
         msgs3 = []
         while msgs2:
             n = random.StrongRandom().randint(0, len(msgs2) - 1)
-            a, b, j, qid = msgs2.pop(n)
+            a, b = msgs2.pop(n)
             clear = self.decrypt((a, b))
             if last:
-                msg = {clear:[j,qid]}
+                msg = clear
             else:
-                msg = (a, clear, j)
+                msg = (a, clear)
             msgs3.append(msg)
+
         return msgs3
 
     def reencrypt(self, cipher, pubkey=None):
@@ -206,13 +207,9 @@ class MixCrypt:
         perm = self.gen_perm(len(msgs))
         for i, p in enumerate(perm):
             m = msgs[p]
-            m1 = [m[0], m[1]]
-            nm = self.reencrypt(m1, pubkey)
-            nm = list(nm)
-            nm.append(m[2])
-            nm.append(m[3])
-            nm = tuple(nm)
+            nm = self.reencrypt(m, pubkey)
             msgs2[i] = nm
+
         return msgs2
 
 

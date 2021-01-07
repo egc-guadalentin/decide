@@ -1,5 +1,4 @@
 from django.contrib.admin import SimpleListFilter
-from .models import Question
 
 
 class StartedFilter(SimpleListFilter):
@@ -25,4 +24,3 @@ class StartedFilter(SimpleListFilter):
             return queryset.exclude(end_date__isnull=True)
         else:
             return queryset.all()
-
