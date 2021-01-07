@@ -1,0 +1,135 @@
+/*------------------------------------------------------------------*/
+/*---------------------------- TRITANOPIA --------------------------*/
+/*------------------------------------------------------------------*/
+
+.body.trit{
+    height:100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: black!important;
+    color:white;
+}
+
+nav.navbar.navbar-dark.bg-primary.navbar-expand-lg.trit{
+    background-color: #4DA9FF!important;
+}
+
+.navbar-brand.trit {
+    color: black!important;
+    font-size: x-large!important;
+}
+
+.dropdown-toggle.trit {
+    color: black!important;
+    font-size: larger;
+}
+
+.nav-item.b-nav-dropdown.dropdown.mr-5.trit a {
+    color: black!important;
+    font-size: larger;
+}
+
+.dropdown-menu.trit {
+    background-color: whitesmoke!important;
+    width: max-content;
+    padding: unset;
+    margin: unset;
+}
+
+li.di-visualizacion.trit a {
+    background-color: #FF6666!important;
+    border-color: #FF6666!important;
+    color: black!important;
+}
+
+li.di-visualizacion.trit a:hover {
+    background-color: #6E95F7!important;
+    border-color: #6E95F7!important;
+    color: black!important;
+}
+
+.alert.trit {
+    color: black!important;
+    background-color: white!important;
+    border-color:white!important;
+}
+
+.btn.btn-primary.trit{
+    background-color: #4DA9FF!important;
+    border-color: #4DA9FF!important;
+    color: black!important;
+}
+
+.btn.btn-primary.trit:hover{
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
+}
+
+.choice-question .trit{
+    width: 100%;
+}
+
+.choice-question.trit label {
+    width: 100%;
+    background-color: #FF6666!important;
+    border-color: #FF6666!important;
+    color:black!important;
+}
+
+.choice-question.trit label:hover {
+    width: 100%;
+    background-color: #6E95F7!important;
+    border-color: #6E95F7!important;
+    color:black!important;
+}
+
+.choice-question.trit label.active {
+    background-color: #6E95F7!important;
+    border-color: #6E95F7!important;
+    color:black!important;
+}
+
+.btn.btn-danger.trit {
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
+}
+
+.btn.btn-danger.trit:hover {
+    background-color: black!important;
+    border-color: black!important;
+    color: white!important;
+}
+
+.btn-success.trit {
+    background-color: #FA70C1!important;
+    border-color: #FA70C1!important;
+    color: black!important;
+}
+
+.table.trit {
+    color: white;
+}
+
+.chart.trit {
+    background-color: white;
+}
+
+a.trit {
+    color: #FF6666;
+}
+
+small.trit {
+    color: white!important;
+}
+
+.alert.alert-danger.sug.trit {
+    background-color: #FF6666!important;
+    border-color: #FF6666!important;
+}
+
+p.dp {
+    color: white!important;
+}

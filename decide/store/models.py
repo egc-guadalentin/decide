@@ -1,13 +1,14 @@
 from django.db import models
-from base.models import BigBigField
 
 
 class Vote(models.Model):
     voting_id = models.PositiveIntegerField()
     voter_id = models.PositiveIntegerField()
+    question_id = models.PositiveIntegerField()
+    sex=models.CharField(max_length=200,blank=True)
 
-    a = BigBigField()
-    b = BigBigField()
+    a = models.TextField()
+    b = models.TextField()
 
     voted = models.DateTimeField(auto_now=True)
 

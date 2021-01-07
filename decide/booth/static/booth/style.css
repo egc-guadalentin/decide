@@ -1,4 +1,93 @@
-.voting {
-    margin-top: 20px;
-    margin-left: 40px;
+/*------------------------------------------------------------------*/
+/*------------------- MODO DE VISUALIZACIÓN NORMAL -----------------*/
+/*------------------------------------------------------------------*/
+
+html, body{
+    height: 100%;
+    margin: 0;
+    display: grid;
+    flex-direction: column;
+}
+
+#app-booth {
+    height: 100%;
+}
+
+/* Barra de navegación */
+
+.navbar-brand {
+    font-size: x-large!important;
+}
+
+.d-lg-none {
+    color: transparent !important;
+}
+
+.dropdown-toggle {
+    color: white!important;
+    font-size: larger;
+}
+
+.nav-item.b-nav-dropdown.dropdown.mr-5 a {
+    font-size: larger;
+}
+
+.dropdown-menu {
+    background-color: white;
+    width: max-content;
+    padding: unset;
+    margin: unset;
+}
+
+li.di-visualizacion a:hover {
+    background-color: #343a40!important;
+    border-color: #343a40!important;
+    color: white!important;
+}
+
+.btn-white {
+    font-size: large;
+}
+
+.radio-dalt {
+    margin: unset!important;
+    border-color: whitesmoke!important;
+    text-align: left!important;
+    font-size: larger;
+}
+
+.submit-dalt {
+    font-size: larger;
+    border-color: whitesmoke!important;
+    margin: unset!important;
+}
+
+.choice-question {
+    width: 100%;
+}
+
+.choice-question label {
+    width: 100%;
+}
+
+.choice-question label.active {
+    background-color: #dc3545!important;
+    border-color: #dc3545!important;
+    color: white!important;
+}
+
+.choice-question label.active:before {
+    content:  "\2192"!important;
+}
+
+.choice-question label.active:after {
+    content:  "\2190"!important;
+}
+
+p{
+    font-size: large;
+}
+
+label{
+    font-size: x-large;
 }

@@ -1,0 +1,135 @@
+/*------------------------------------------------------------------*/
+/*-------------------- DEUTERANOPIA Y PROTANOPIA -------------------*/
+/*------------------------------------------------------------------*/
+
+.body.dp{
+    height:100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: black!important;
+    color:white;
+}
+
+nav.navbar.navbar-dark.bg-primary.navbar-expand-lg.dp{
+    background-color: #52ACFF!important;
+}
+
+.navbar-brand.dp {
+    color: black!important;
+    font-size: x-large!important;
+}
+
+.nav-item.b-nav-dropdown.dropdown.mr-5.dp a {
+    color: black!important;
+    font-size: larger;
+}
+
+.dropdown-menu.dp {
+    background-color: whitesmoke!important;
+    width: max-content;
+    padding: unset;
+    margin: unset;
+}
+
+li.di-visualizacion.dp a {
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+li.di-visualizacion.dp a:hover {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color: black!important;
+}
+
+.btn.btn-primary.dp{
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.btn.btn-primary.dp:hover{
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
+}
+a.btn.mb-5.col-6.offset-3.col-sm-4.offset-sm-4.col-xl-2.offset-xl-5.btn-white.btn-primary.btn-lg.btn-block.dp:hover{
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.choice-question .dp{
+    width: 100%;
+}
+
+.choice-question.dp label {
+    width: 100%;
+    background-color: #52ACFF!important;
+    border-color: #52ACFF!important;
+    color: black!important;
+}
+
+.choice-question.dp label:hover {
+    width: 100%;
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color: black!important;
+}
+
+.choice-question.dp label.active {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color:black!important;
+}
+
+.alert.dp {
+    color: black!important;
+    background-color: white!important;
+    border-color:white!important;
+}
+
+.btn.btn-danger.dp {
+    background-color: white!important;
+    border-color: white!important;
+    color: black!important;
+}
+
+.btn.btn-danger.dp:hover {
+    background-color: black!important;
+    border-color: black!important;
+    color: white!important;
+}
+
+.btn-success.dp {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+    color:black!important;
+}
+
+.table.dp {
+    color: white;
+}
+
+.chart.dp {
+    background-color: white;
+}
+
+a.dp {
+    color: #E3CA26;
+}
+
+small.dp {
+    color: white!important;
+}
+
+.alert.alert-danger.sug.dp {
+    background-color: #E3CA26!important;
+    border-color: #E3CA26!important;
+}
+
+p.dp {
+    color: white!important;
+}

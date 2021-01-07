@@ -20,13 +20,15 @@ class StoreView(generics.ListAPIView):
     def get(self, request):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
+
         return super().get(request)
 
     def post(self, request):
         """
          * voting: id
          * voter: id
-         * vote: { "a": int, "b": int }
+         * question_id: id
+         * vote: [{ "a": int, "b": int }, { "a": int, "b": int }, ...]
         """
 
         vid = request.data.get('voting')
@@ -42,6 +44,7 @@ class StoreView(generics.ListAPIView):
 
         uid = request.data.get('voter')
         vote = request.data.get('vote')
+        question_id = request.data.get('question_id')
 
         if not vid or not uid or not vote:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
@@ -50,6 +53,7 @@ class StoreView(generics.ListAPIView):
         token = request.auth.key
         voter = mods.post('authentication', entry_point='/getuser/', json={'token': token})
         voter_id = voter.get('id', None)
+
         if not voter_id or voter_id != uid:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -58,15 +62,26 @@ class StoreView(generics.ListAPIView):
         if perms.status_code == 401:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
-        a = vote.get("a")
-        b = vote.get("b")
+        # the user has voted this question of this voting
+        number_of_votes = Vote.objects.filter(voting_id=vid, question_id=question_id, voter_id=voter_id).count()
+        if number_of_votes != 0:
+            return Response({}, status=status.HTTP_403_FORBIDDEN)
+        else:
+            sexType=request.user.sex
+            a = ""
+            b = ""
+            for opt in vote:
+                a = a + opt['a'] + ','
+                b = b + opt['b'] + ','
 
-        defs = { "a": a, "b": b }
-        v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,
-                                          defaults=defs)
-        v.a = a
-        v.b = b
+            a = a[:-1]
+            b = b[:-1]
 
-        v.save()
+            v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,sex=sexType, question_id=question_id)
+
+            v.a = a
+            v.b = b
+
+            v.save()
 
         return  Response({})

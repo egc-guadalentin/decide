@@ -1,0 +1,108 @@
+{% extends "booth/base.html" %}
+{% load i18n static %}
+
+{% block logout %}
+<a aria-labelledby="dashbHelp" class="btn btn-danger" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'dashboard' %}">Volver al Dashboard</a>
+<div id="dashbHelp" style="display: none">Botón para volver a la página del dashboard</div>
+{% endblock %}
+
+{% block content %}
+{% if access_blocked %}
+<p>El registro de sugerencia al que desea acceder no es de su autoría, por lo que no tiene permiso para visualizarlo.</p>
+{% else %}
+{% if not suggesting %}
+<h2>Formulario de sugerencia de votación</h2>
+<p class="lead">Mediante este formulario puede enviar y registrar su sugerencia para el desarrollo y la celebración de una votación.</p>
+{% else %}
+<h2>Sugerencia de votación {{suggesting.id}}</h2>
+{% endif %}
+<form action="{% url 'suggesting-send' %}" method="POST" aria-describedby="formHelp">
+<div id="formHelp" style="display: none">Formulario para enviar a los administradores del sistema una sugerencia de votación. Debes introducir un título para la votación, la fecha que propones y tus argumentos y razones para incluirla</div>
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="suggestingTitle">Título</label>
+        <input name="suggesting-title" type="text" class="form-control" id="suggestingTitle" required
+            {% if suggesting %} value="{{suggesting.title}}" readonly {% endif %}
+            {% if post_data %} value="{{post_data.title}}" {% endif %}>
+    </div>
+    <div class="form-group">
+        <label for="suggestingDate">Fecha propuesta</label>
+        <input name="suggesting-date" type="date" class="form-control" id="suggestingDate" required
+        {% if suggesting %} value="{{suggesting.suggesting_date|date:"Y-m-d"}}" readonly {% endif %}
+        {% if post_data %} value="{{post_data.suggesting_date}}" {% endif %}>
+        {% if not suggesting and not post_data %}<small class="form-text text-muted" v-bind:class="{dp: csspd, trit: csstrit}">Debe elegir una fecha futura</small>{% endif %}
+        {% if post_data %}
+        <p class="alert alert-danger sug" v-bind:class="{dp: csspd, trit: csstrit}">{{post_data.errors}}</p>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        <label for="suggestingContent">Argumentos y razones</label>
+        <textarea name="suggesting-content" class="form-control" id="suggestingContent" rows="6" required style="min-height:120px;"
+            placeholder="Por favor, argumente los motivos por los que considera necesaria la celebración de la votación que sugiere."
+            {% if suggesting %} readonly {% endif %}>{% if suggesting %}{{suggesting.content}}{% endif %}{% if post_data %}{{post_data.content}}{% endif %}</textarea>
+    </div>
+    {% if suggesting %}
+        <p v-bind:class="{dp: csspd, trit: csstrit}">{{suggesting_state}}</p>
+    {% else %}
+    <button id="submitSugForm" type="submit" class="btn btn-primary" v-bind:class="{dp: csspd, trit: csstrit}">Enviar</button>
+    {% endif %}
+</form>
+{% endif %}
+{% endblock %}
+
+{% block extrabody %}
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app-booth',
+        data: {
+            alertShow: false,
+            alertMsg: "",
+            alertLvl: "info",
+            csspd: false,
+            csstrit: false
+        },
+        beforeMount() {
+            console.log(document.cookie)
+            this.checkDaltCookie();
+        },
+        methods: {
+            checkDaltCookie() {
+                var cookies = document.cookie.split("; ");
+                cookies.forEach((c) => {
+                    var cs = c.split("=");
+                    if (cs[0] == 'cssMode' && cs[1]) {
+                        if (cs[1] == 'pd') {
+                            this.csspd = true;
+                            this.csstrit = false;
+                        } else if (cs[1] == 'trit') {
+                            this.csspd = false;
+                            this.csstrit = true;
+                        }
+                    }
+                });
+            },
+            change_css(v1,v2) {
+                if (v1 & !v2) {
+                    this.csspd = true;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=pd; path=/;';
+                } else if (!v1 & v2) {
+                    this.csspd = false;
+                    this.csstrit = true;
+                    document.cookie = 'cssMode=trit; path=/;';
+                } else {
+                    this.csspd = false;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                }
+            },
+            showAlert(lvl, msg) {
+                this.alertLvl = lvl;
+                this.alertMsg = msg;
+                this.alertShow = true;
+            }
+        }
+    });
+</script>
+{% endblock %}

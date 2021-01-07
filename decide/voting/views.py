@@ -4,11 +4,16 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
-
+from rest_framework.views import APIView
 from .models import Question, QuestionOption, Voting
-from .serializers import SimpleVotingSerializer, VotingSerializer
+from .serializers import SimpleVotingSerializer, VotingSerializer, MinimalVotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+from base import mods
+
+from census.models import Census
+from voting.models import Voting
+from store.models import Vote
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -47,7 +52,6 @@ class VotingView(generics.ListCreateAPIView):
         auth.save()
         voting.auths.add(auth)
         return Response({}, status=status.HTTP_201_CREATED)
-
 
 class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
     queryset = Voting.objects.all()
@@ -99,3 +103,32 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
+
+class GetUserVotingsView(APIView):
+    def post(self, request):
+        # validating token
+        token = request.auth.key
+        user = mods.post('authentication', entry_point='/getuser/', json={'token': token})
+        user_id = user.get('id', None)
+
+        if not user_id:
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        my_votings = Census.objects.filter(voter_id=user_id).values_list('voting_id', flat=True).distinct()
+        pending_votings = []
+        past_votings = []
+        for vid in my_votings:
+            try:
+                voting = Voting.objects.get(id=vid)
+                votes = Vote.objects.filter(voter_id=user_id, voting_id=vid).count()
+                
+                if votes == 0 and voting.start_date != None and voting.end_date == None:
+                    pending_votings.append(voting)
+                elif votes > 0 and voting.start_date != None and voting.end_date != None and voting.tally != None:
+                    past_votings.append(voting)
+            except:
+                pass
+
+        return Response({'pending_votings': MinimalVotingSerializer(pending_votings, many=True).data,
+            'past_votings': MinimalVotingSerializer(past_votings, many=True).data })
