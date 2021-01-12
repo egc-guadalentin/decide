@@ -1,0 +1,218 @@
+{% extends "booth/base.html" %}
+{% load i18n static %}
+
+{% block logout %}
+<a aria-labelledby="logoutHelp" class="btn btn-danger" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'logout' %}">Cerrar Sesión</a>
+<div id="logoutHelp" style="display: none">Botón para cerrar la sesión en la página</div>
+{% endblock %}
+
+{% block content %}
+<h1 aria-describedby="dashInfo">Dashboard</h1>
+<div id="dashInfo" style="display: none">Página principal del módulo de cabina en la que puedes consultar las votaciones que tienes disponibles, el acceso al formulario de sugerencias y las sugerencias pendientes y aceptadas y dos gráficas con datos sobre votaciones realizadas</div>
+<p class="lead">¡Te damos la bienvenida a la cabina, {{username}}!</p>
+{% if no_censo %}
+  <div class="text-left">
+    <p>No has sido añadido al censo de ninguna votación</p>
+  </div>
+{% else %}
+    <div class="row mt-5 text-left">
+      <div class="col-12">
+        <h2>Votaciones disponibles</h2>
+        {% if not no_vot_dis %}
+          <table class="table" v-bind:class="{dp: csspd, trit: csstrit}" aria-describedby="votingsInfo">
+            <div id="votingsInfo" style="display: none">Tabla en la que se pueden observar las votaciones en las que estás incluido en el censo y todavía puedes enviar tu voto</div>
+            <thead>
+              <tr>
+                <th scope="col">Votación</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Fecha de inicio</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for votacion in vot_dis %}
+              <tr>
+                <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'voting' votacion.id votacion.question.first.id%}">{{votacion.name}}</a></td>
+                <td>{{votacion.desc}}</td>
+                <td>{{votacion.start_date}}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>No tiene votaciones disponibles</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row mt-5 align-items-center text-left">
+      <div class="col-sm-9">
+        <h2>Sugerencias de votaciones</h2>
+      </div>
+      <div class="col-sm-3">
+        <a id="sugBtn" aria-labelledby="newSugBtn" class="btn btn-primary float-md-right float-sm-left" v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-form' %}">Nueva sugerencia</a>
+        <div id="newSugBtn" style="display: none">Botón para ir al formulario de envío de sugerencias</div>
+      </div>
+    </div>
+    <div class="row mt-4 text-left">
+      <div class="col-md-6">
+        <h3>Tus sugerencias mas recientes</h3>
+        {% if not no_recents_suggs %}
+        <table class="table" v-bind:class="{dp: csspd, trit: csstrit}" aria-describedby="recSugInfo">
+          <div id="recSugInfo" style="display: none">Tabla donde aparecen las sugerencias enviadas recientemente</div>
+          <thead>
+            <tr>
+              <th scope="col">Título</th>
+              <th scope="col">Fecha de sugerencia</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for sugerencia in recent_suggestions %}
+            <tr>
+              <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+              <td>{{sugerencia.suggesting_date}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No tienes sugerencias recientes</p>
+        {% endif %}
+      </div>
+      <div class="col-md-6">
+        <h3>Tus sugerencias aprobadas</h3>
+        {% if not no_approved_suggs %}
+        <table class="table" v-bind:class="{dp: csspd, trit: csstrit}" aria-describedby="aceSugInfo">
+          <div id="aceSugInfo" style="display: none">Tabla donde aparecen tus sugerencias que han sido confirmadas por los administradores del sistema</div>
+          <thead>
+            <tr>
+              <th scope="col">Título</th>
+              <th scope="col">Fecha de sugerencia</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for sugerencia in approved_suggestions %}
+            <tr>
+              <td><a v-bind:class="{dp: csspd, trit: csstrit}" href="{% url 'suggesting-detail' sugerencia.id %}">{{sugerencia.title}}</a></td>
+              <td>{{sugerencia.suggesting_date}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>No tienes votaciones aprobadas</p>
+        {% endif %}
+      </div>
+    </div>
+    <div aria-labelledby="chartsInfo" class="row mt-5 text-left">
+      <div id="chartsInfo" style="display: none">A continuación aparecen dos gráficas con información acerca de votaciones que has realizado</div>
+      <div class="col-md-6">
+        <h2>Votaciones de los últimos meses</h2>
+          <div id="container1" class="chart" v-bind:class="{dp: csspd, trit: csstrit}">
+          <canvas id="vot_por_mes_chart" aria-label="Imagen con un gráfico de barras con el número de votaciones por mes realizadas en el último año" role="img"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h2>Votaciones de cada tipo</h2>
+        <div id="container2" class="chart" v-bind:class="{dp: csspd, trit: csstrit}">
+          <canvas id="tipos_vot_chart" aria-label="Imagen con un gráfico de barras con el número de votaciones realizadas agrupadas por tipo" role="img"></canvas>
+        </div>
+      </div>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extrabody %}
+
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app-booth',
+        data: {
+            alertShow: false,
+            alertMsg: "",
+            alertLvl: "info",
+            csspd: false,
+            csstrit: false
+        },
+        beforeMount() {
+            this.checkDaltCookie();
+        },
+        methods: {
+            checkDaltCookie() {
+                var cookies = document.cookie.split("; ");
+                cookies.forEach((c) => {
+                    var cs = c.split("=");
+                    if (cs[0] == 'cssMode' && cs[1]) {
+                        if (cs[1] == 'pd') {
+                            this.csspd = true;
+                            this.csstrit = false;
+                        } else if (cs[1] == 'trit') {
+                            this.csspd = false;
+                            this.csstrit = true;
+                        }
+                    }
+                });
+            },
+            change_css(v1,v2) {
+                if (v1 & !v2) {
+                    this.csspd = true;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=pd; path=/;';
+                } else if (!v1 & v2) {
+                    this.csspd = false;
+                    this.csstrit = true;
+                    document.cookie = 'cssMode=trit; path=/;';
+                } else {
+                    this.csspd = false;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                }
+            },
+            showAlert(lvl, msg) {
+                this.alertLvl = lvl;
+                this.alertMsg = msg;
+                this.alertShow = true;
+            }
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script>
+
+    var config1 = {
+      type: 'bar',
+      data: {
+        datasets: [{
+          data:{{votaciones_por_meses}},
+          backgroundColor: '#007bff',
+          label: 'Votaciones'
+        }],
+        labels: {{months|safe}}
+      },
+      options: {
+        responsive: true
+      }
+    };
+
+    var config2 = {
+      type: 'bar',
+      data: {
+        datasets: [{
+          data:{{tipo_votaciones}},
+          backgroundColor: '#007bff',
+          label: 'Votaciones'
+        }],
+        labels: ['Única', 'Múltiple', 'Rango']
+      },
+      options: {
+        responsive: true
+      }
+    };
+
+    window.onload = function() {
+      var ctx1 = document.getElementById('vot_por_mes_chart').getContext('2d');
+      var ctx2 = document.getElementById('tipos_vot_chart').getContext('2d');
+      window.myBar = new Chart(ctx1, config1);
+      window.myBar = new Chart(ctx2, config2);
+    };
+  </script>
+{% endblock %}

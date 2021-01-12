@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="es">
+    {% block extrahead %}
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link type="text/css" rel="stylesheet"
+            href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet"
+            href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+        <script src="{% static 'js/zoom.js' %}"></script>
+    {% endblock %}
+    
+    {% block content %}
+    <div id="help-voice-assistant">
+        <div id="app-index">
+        <!-- Ayuda con los asistentes de voz-->
+        <b-navbar toggleable="lg" type="dark" variant="primary">
+            
+            <b-navbar-brand href="/">
+                <img src="{% static 'styles/LOGODecide.png' %}" />
+                Decide
+              </b-navbar-brand>
+            
+            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+            
+            <b-collapse id="nav-collapse" is-nav>
+                <b-navbar-nav>
+                    <div id="buttons_zoom">
+                        <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+                        <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+                    </div>
+                </b-navbar-nav>
+
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto" v-if="user != null">
+                <b-navbar-brand v-if="user != null">
+                    <strong>
+                    Welcome [[this.user.username]]!
+                    </strong>
+                </b-navbar-brand>
+                <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+                    {% for style in user_styles %}
+                      <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
+                    {% endfor %}
+                </b-nav-item-dropdown>
+                <b-button variant="danger" v-on:click="decideLogout">
+                    {% trans "Logout" %}
+                </b-button>
+            </b-navbar-nav>
+            <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
+                <b-navbar-brand v-if="user == null">
+                    <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
+                </b-navbar-brand>
+            </b-navbar-nav>
+            </b-collapse>
+        </b-navbar>
+
+        <!-- Alerts -->
+        <b-alert :variant="alertLvl" dismissible v-model="alertShow">
+            [[ alertMsg ]]
+        </b-alert>
+
+        <!-- Login -->
+        <div class="overlay" id="overlay">
+            <div class="popup" id="popup">
+                <b-button variant="danger" onclick="closePopUp();" id="closePopUp" class="closePopUp">X</b-button>
+                <h4>Login</h4>
+                <b-row v-if="user == null" align-h="center">
+                    <b-col cols="4" class="text-center">
+                        <b-form @submit="onSubmitLogin">
+                            <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
+                                <b-form-input
+                                    id="username"
+                                    type="text"
+                                    v-model="form.username"
+                                    autocomplete="username"
+                                    required />
+                            </b-form-group>
+                            <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
+                                <b-form-input
+                                    id="password"
+                                    type="password"
+                                    autocomplete="current-password"
+                                    v-model="form.password"
+                                    required />
+                            </b-form-group>
+                            <b-button onclick="closePopUp();" class="mt-3" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
+                        </b-form>
+                    </b-col>
+                </b-row>
+            </div>
+        </div>
+
+        </div>
+        <h2>Help with voice assistants</h2>
+            <p>
+                Welcome to the help page with voice assistants. On this page we will indicate some voice assistants recommended by us,
+                which we have used to check that our page is readable by them.
+                <!-- Bienvenido a la página de ayuda con los asistentes de voz. En esta página indicaremos algunos asistentes de voz
+                recomendados por nosotros, que hemos utilizado para comprobar que nuestra página es legible por estos. -->
+            </p>
+            <p>
+                We want our page be as suitable as possible for each person, helping those who have
+                some kind of vision problem with the support of a voice assistant. In addition, with the voice assistants indicated in
+                this page, you will be able to hear information that is not explicitly written on the page, such as by
+                example an explanation of an image or a graph.
+                <!-- Queremos que nuestra página sea lo más adecuada posible para cada persona, ayudando a aquellas personas que tienen
+                algún tipo de problema de vista con el apoyo de un asistente de voz. Además, con los asistentes de voz que se
+                indican a continuación, se podrá escuchar información que no viene explícitamente escrita en la página, como por
+                ejemplo una explicación de una imagen o una gráfica. -->
+            </p>
+            <p>
+                Recommended voice assistants:
+                <!-- Asistentes de voz recomendados: -->
+                <ul>
+                    <!-- En cualquier ordenador: Extensión Read Aloud para navegadores.-->
+                    <li>On computer: "Read Aloud" extension for browsers.<br>
+                        <!--Hemos elegido esta extensión, al ser muy fácil tanto de instalar como utilizar. En prácticamente un solo minuto, 
+                        puede instalarla y aprender como utilizarla. Simplemente con pulsar el boton de "Añadir a Chrome" (o "Añadir a 
+                        Firefox"), ya estaría listo para su uso.-->
+                        We have chosen this extension, because it is very easy to install and use. In almost a minute, you can install 
+                        it and learn how to use it. Simply clicking the "Add to Chrome" button (or "Add to Firefox"), 
+                        would be ready for use.<br>
+                        <img id="asistente_instalacion" src="{% static 'styles/asistente_voz_instalacion.png' %}" alt="Image of voice assistant installation"/><br>
+                        <!--Y para utilizarlo, simplemente tenemos que ir a la página que queremos escuchar a través del ordenador y 
+                        pulsar el símbolo de la extensión (megáfono), y pulsar el siguiente botón.-->
+                        And to use it, we simply have to go to the page that we want to hear through 
+                        the computer and press the symbol of extension (megaphone), and press the next button to play<br>
+                        <img id="asistente_uso" src="{% static 'styles/asistente_voz_uso.PNG' %}" alt="Image of voice assistant usage"/><br><br>
+                        <!--Además, puedes escuchar únicamente la parte que desees de la página, seleccionándolo-->
+                        In addition, You can only listen to the part of the page you want, selecting it.<br>
+                        <img id="asistente_uso2" src="{% static 'styles/asistente_voz_uso2.png' %}" alt="Image of voice assistant usage"/><br>
+                        <!--Enlaces para descargar la extension:-->
+                        Links to download the extension:
+                        <ul>
+                        <li>Chrome: <a href="https://chrome.google.com/webstore/detail/read-aloud-a-text-to-spee/hdhinadidafjejdhmfkjgnolgimiaplp?hl=es" target="_blank">Click here to install</a></li>
+                        <li>Firefox: <a href="https://addons.mozilla.org/es/firefox/addon/read-aloud/?utm_source=addons.mozilla.org&utm_medium=referral&utm_content=search" target="_blank">Click here to install</a></li>
+                        </ul>
+                        <br>
+                    </li>
+                    <li>
+                        <!--En dispositivos móviles: Instalar google assistant desde la Play Store (Android) o App Store (iOS)-->
+                        On mobile: Install the google assistant from the Play Store (Android) o App Store (iOS) <br>
+                        <img id="asistente_movil" src="{% static 'styles/asistente_voz_movil.jpeg' %}" alt="Image voice assistant for mobile"/>
+                    </li>
+                </ul>
+            </p>
+    
+        </div>
+    {% endblock %}
+    
+    {% block extrabody %}
+        <!-- Vuejs -->
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+        <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+        <script>
+            var app = new Vue({
+                delimiters: ['[[', ']]'],
+                el: '#app-index',
+                data: {
+                    token: null,
+                    user: null,
+                    form: {
+                        username: '',
+                        password: ''
+                    },
+                    alertShow: false,
+                    alertMsg: "",
+                    alertLvl: "info"
+                },
+                beforeMount() {
+                    this.init()
+                },
+                methods: {
+                    init() {
+                        var cookies = document.cookie.split("; ");
+                        cookies.forEach((c) => {
+                            var cs = c.split("=");
+                            if (cs[0] == 'decide' && cs[1]) {
+                                this.token = cs[1];
+                                this.getUser();
+                            }
+                        });
+                    },
+                    postData(url, data) {
+                        var fdata = {
+                            body: JSON.stringify(data),
+                            headers: {
+                                'content-type': 'application/json',
+                            },
+                            method: 'POST',
+                        };
+      
+                        if (this.token) {
+                            fdata.headers['Authorization'] = 'Token ' + this.token;
+                        }
+      
+                        return fetch(url, fdata)
+                            .then(response => {
+                                if (response.status === 200) {
+                                    return response.json();
+                                } else {
+                                    return Promise.reject(response.statusText);
+                                }
+                            });
+                    },
+                    onSubmitLogin(evt) {
+                        evt.preventDefault();
+                        this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                            .then(data => {
+                                document.cookie = 'decide='+data.token+'; path=/; max-age=7200;';
+                                this.token = data.token;
+                                this.getUser();
+                            })
+                            .catch(error => {
+                                this.showAlert("danger", 'Error: ' + error);
+                            });
+                    },
+                    getUser(evt) {
+                        var data = {token: this.token};
+                        this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
+                            .then(data => {
+                                this.user = data;
+                                if(this.user.style == 'C')
+                                  setUserStyle("{% static 'styles/C.css' %}");
+                                else
+                                  setUserStyle("{% static 'styles/N.css' %}");
+                            })
+                            .catch(error => {
+                                this.showAlert("danger", 'Error: ' + error);
+                            });
+                    },
+                    onChangeStyle(newstyle) {
+                        var data = {token: this.token, style: newstyle};
+                        this.postData("{% url "gateway" "authentication" "/changestyle/" %}", data)
+                            .then(data => {
+                                this.getUser();
+                            })
+                            .catch(error => {
+                                this.showAlert("danger", '{% trans "Error: " %}' + error);
+                            });
+                    },
+                    decideLogout(evt) {
+                      var opcion = confirm("Are you sure you want to log out?");
+                        if (opcion == true) {
+                          alert ("You have successfully logged out");
+                          evt.preventDefault();
+                          var data = {token: this.token};
+                          this.postData("/gateway/authentication/logout/", data);
+                          this.token = null;
+                          this.user = null;
+                          document.cookie = 'decide=; path=/;';
+                          return true;
+                        } else {
+                          return false;
+                      }
+                    },
+                    showAlert(lvl, msg) {
+                        this.alertLvl = lvl;
+                        this.alertMsg = msg;
+                        this.alertShow = true;
+                    }
+                },
+            })
+        </script>
+        <script>
+          function openPopUp() {
+            overlay = document.getElementById('overlay');
+            popup = document.getElementById('popup');
+            overlay.classList.add('active');
+            popup.classList.add('active');
+      
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+          }
+          function closePopUp(){
+            overlay.classList.remove('active');
+            popup.classList.remove('active');
+          }
+        </script>
+    {% endblock %}
+</html>

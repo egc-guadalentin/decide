@@ -1,0 +1,87 @@
+{% extends "booth/base.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <form action="{% url 'dashboard' %}" method="POST" aria-describedby="formHelp">
+    <div id="formHelp" style="display: none">Formulario previo al acceso al módulo de cabina de votación. Debes rellenar los campos del formulario existentes a continuación con tu nombre de usuario y tu contraseña</div>
+        {% csrf_token %}
+        <div class="row pt-5">
+            <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+                <div class="form-group">
+                    <label class="text-justify" for="username">Usuario</label>
+                    <input type="text" name="username" class="form-control" id="username" aria-labelledby="usernameHelp">
+                    <div id="usernameHelp" style="display: none">Introduce tu usuario en este campo del formulario</div>
+                </div>
+                <div class="form-group">
+                    <label class="text-justify" for="password">Contraseña</label>
+                    <input type="password" name="password" class="form-control" id="password" aria-labelledby="passHelp">
+                    <div id="passHelp" style="display: none">Introduce tu contraseña en este campo del formulario</div>
+                </div>
+                {% if no_user %}
+                    <div id="loginFail" class="alert alert-danger" role="alert">
+                        El usuario no está registrado en el sistema.
+                    </div>
+                {% endif %}
+                <button aria-labelledby="btnEntrar" type="submit" class="btn btn-primary" v-bind:class="{dp: csspd, trit: csstrit}">Entrar</button>
+                <div id="btnEntrar" style="display: none">Pulsa este botón para enviar el formulario e iniciar sesión</div>
+            </div>
+        </div>
+    </div>    
+    </form>
+{% endblock %}
+
+{% block extrabody %}
+<script>
+    var app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app-booth',
+        data: {
+            alertShow: false,
+            alertMsg: "",
+            alertLvl: "info",
+            csspd: false,
+            csstrit: false
+        },
+        beforeMount() {
+            this.checkDaltCookie();
+        },
+        methods: {
+            checkDaltCookie() {
+                var cookies = document.cookie.split("; ");
+                cookies.forEach((c) => {
+                    var cs = c.split("=");
+                    if (cs[0] == 'cssMode' && cs[1]) {
+                        if (cs[1] == 'pd') {
+                            this.csspd = true;
+                            this.csstrit = false;
+                        } else if (cs[1] == 'trit') {
+                            this.csspd = false;
+                            this.csstrit = true;
+                        }
+                    }
+                });
+            },
+            change_css(v1,v2) {
+                if (v1 & !v2) {
+                    this.csspd = true;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=pd; path=/;';
+                } else if (!v1 & v2) {
+                    this.csspd = false;
+                    this.csstrit = true;
+                    document.cookie = 'cssMode=trit; path=/;';
+                } else {
+                    this.csspd = false;
+                    this.csstrit = false;
+                    document.cookie = 'cssMode=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                }
+            },
+            showAlert(lvl, msg) {
+                this.alertLvl = lvl;
+                this.alertMsg = msg;
+                this.alertShow = true;
+            }
+        }
+    });
+</script>
+{% endblock %}

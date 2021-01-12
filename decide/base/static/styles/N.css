@@ -1,0 +1,198 @@
+//editar
+#header {
+    background-color: blueviolet;
+}
+
+body,h3,a{
+    font-size:1em;
+}
+
+h1{
+    font-size:1.4285em;
+}
+
+h2{
+font-size:1.1428em;
+}
+ p,td,span{
+     font-size:0.9285em;
+ }
+
+#zoomIn,#zoomOut{
+    border-radius: .3rem;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
+    color:white;
+
+}
+
+.colMS {
+    background-color:#b7dee4 !important;
+}
+
+h1{
+    color: #0a1b2b !important;
+    font-family: serif !important;
+}
+.dashboard #header{ 
+    background-color: #185471 !important;
+}
+
+.module caption{
+    background: #185471 !important;
+}
+
+#container{
+    background-color: #b7dee4 !important ;
+}
+
+
+footer{
+    background-color: #b7dee4 !important ;
+}
+html, body{
+    background-color:#b7dee4 !important;
+}
+.login #container{
+    background-color: whitesmoke !important;
+}
+.object-tools .addlink{
+    background-color: #c0e22a !important;
+}
+#branding{
+    display:inline-flex;
+}
+.required{
+    font-size: 0.875em;
+}
+#id_username,#id_password{
+    font-size: 1em;
+}
+#buttons_zoom{
+    margin:auto;
+}
+.d-block{
+    font-size: 1.36em;
+}
+#username,#password{
+    font-size:1em;
+}
+#asistente_instalacion,#asistente_uso2 {
+    width: 1000px;
+}
+
+#asistente_movil {
+    width: 400px;
+}
+
+.btn-abrir-popup{
+    padding: 0 20px;
+	margin-bottom: 20px;
+	height: 40px;
+	line-height: 40px;
+	border: none;
+	color: #fff;
+	background: #185471;
+	border-radius: 3px;
+	font-size: 16px;
+	cursor: pointer;
+	transition: .3s ease all;
+    cursor: pointer;
+    margin-left: 100 px;
+}
+
+/* POPUP */
+.overlay {
+	background: rgba(0,0,0,.3);
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+    right: 0;
+    align-items: center;
+	justify-content: center;
+    display: flex;
+    visibility: hidden;
+    
+}
+.overlay.active{
+    visibility: visible;
+}
+
+.popup {
+	background: #F8F8F8;
+	box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.3);
+	border-radius: 3px;
+	padding: 20px;
+	text-align: center;
+    width: 600px;
+}
+
+.popup .btn-cerrar-popup{
+    font-size: 16px;
+	line-height: 16px;
+	display: block;
+	text-align: right;
+	transition: .3s ease all;
+	color: #BBBBBB;
+}
+
+.popup .btn-cerrar-popup:hover {
+	color: #000;
+}
+.closePopUp {
+    float: right;
+}
+.popup h4 {
+    color: #0a1b2b !important;
+    font-family: serif !important;
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+
+/*
+ESTO FUE LO K AÑADIO MOISES AL ESTILO DE CABINA SIN QUERER. POR SI HACE FALTA
+
+.choice-question {
+    width: 100%;
+}
+
+.choice-question label {
+    width: 100%;
+}
+
+.choice-question label.active {
+    background-color: #03ad03!important;
+} 
+
+p{
+    font-size: 1.25em;
+}
+
+label{
+
+    font-size: 1.25em;
+}
+
+h1{
+   font-size: 2.25em;
+}
+.navar-brand{
+    font-size:1.25em;
+}
+.btn-lg{
+    font-size: 1.25em;
+}
+.form-control{
+    font-size: 1em;
+}
+#zoomIn,#zoomOut{
+    border-radius: .3rem;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
+    color:white;
+
+}
+*/

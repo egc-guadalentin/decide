@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+<link type="text/css" rel="stylesheet"
+        href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet"
+        href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+<script src="{% static 'js/zoom.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div id="app-index">
+  <!-- Navbar -->
+  <b-navbar toggleable="lg" type="dark" variant="primary">
+    <b-navbar-brand href="/">
+      <img src="{% static 'styles/LOGODecide.png' %}" />
+      Decide
+    </b-navbar-brand>
+
+    <!-- Responsive navbar button -->
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav>
+        <div id="buttons_zoom"> 
+          <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+          <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+      </div>
+      </b-navbar-nav>
+
+      <!-- Right aligned nav items -->
+      <b-navbar-nav class="ml-auto" v-if="user != null">
+        <b-navbar-brand v-if="user != null">
+          <strong>
+          Welcome [[this.user.username]]!
+          </strong>
+        </b-navbar-brand>
+        <b-nav-item-dropdown text="{% trans "Change style" %}" right>
+          {% for style in user_styles %}
+            <b-dropdown-item v-on:click="onChangeStyle('{% trans style.0 %}')" :active="user.style == '{% trans style.0 %}'">{% trans style.1 %}</b-dropdown-item>
+          {% endfor %}
+        </b-nav-item-dropdown>
+        <b-button variant="danger" v-on:click="decideLogout">
+          {% trans "Logout" %}
+        </b-button>
+      </b-navbar-nav>
+      <b-navbar-nav class="ml-auto" v-if="user == null"></b-navbar-nav>
+        <b-navbar-brand v-if="user == null">
+          <b-button onclick="openPopUp();"variant="light" id="btn-abrir-popup" class="btn-abrir-popup">{% trans "Login" %}</b-button>
+        </b-navbar-brand>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+
+  <!-- Alerts -->
+  <b-alert :variant="alertLvl" dismissible v-model="alertShow">
+    [[ alertMsg ]]
+  </b-alert>
+
+  <b-container class="pt-3">
+    <b-row>
+      <b-col>Welcome to Decide, the online voting platform. This is the main page. Here, you can press booth to go voting or press visualizer to see the results.</b-col>
+    </b-row>
+    <div>
+      <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Booth</b-button></b-col>
+    </div>
+    <div>
+      <b-col lg="4" class="pb-2"><b-button class="mt-2" variant="primary" size="lg">Visualizer</b-button></b-col>
+    </div>
+    <!-- Login -->
+    <div class="overlay" id="overlay">
+			<div class="popup" id="popup">
+        <b-button variant="danger" onclick="closePopUp();" id="closePopUp" class="closePopUp">X</b-button>
+        <h4>Login</h4>
+        <b-row v-if="user == null" align-h="center">
+          <b-col cols="4" class="text-center">
+            <b-form @submit="onSubmitLogin">
+              <b-form-group class="text-justify" label="{% trans "Username" %}" label-for="username">
+                  <b-form-input
+                      id="username"
+                      type="text"
+                      v-model="form.username"
+                      autocomplete="username"
+                      required />
+              </b-form-group>
+              <b-form-group class="text-justify" label="{% trans "Password" %}" label-for="password">
+                  <b-form-input
+                      id="password"
+                      type="password"
+                      autocomplete="current-password"
+                      v-model="form.password"
+                      required />
+              </b-form-group>
+              <b-button onclick="closePopUp();" class="mt-3" type="submit" variant="primary" size="lg">{% trans "Login" %}</b-button>
+          </b-form>
+          </b-col>
+        </b-row>
+			</div>
+    </div>
+    <!-- Dashboard -->
+    <b-row v-if="user != null">
+      <b-col sm="12" md="6">
+        <h1>{% trans "My pending votings" %}</h1>
+        <b-list-group>
+          <b-list-group-item variant="secondary" v-if="[[ pending_votings.length ]] <= 0">{% trans "No pending votings" %}</b-list-group-item>
+          <b-list-group-item v-for="voting in pending_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
+        </b-list-group>
+      </b-col>
+      <b-col sm="12" md="6">
+        <h1>{% trans "My votings results" %}</h1>
+        <b-list-group>
+          <b-list-group-item variant="secondary" v-if="[[ past_votings.length ]] <= 0">{% trans "No results" %}</b-list-group-item>
+          <b-list-group-item v-for="voting in past_votings" :href="'/booth/' + voting.id">[[ voting.name ]]</b-list-group-item>
+        </b-list-group>
+      </b-col>
+    </b-row>
+    <b-row class="pt-5">
+      <b-img center src={% static 'styles/footer.png' %}>FOOTER FEO</b-img>
+    </b-row>
+  </b-container>
+</div>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+      var app = new Vue({
+          delimiters: ['[[', ']]'],
+          el: '#app-index',
+          data: {
+              token: null,
+              user: null,
+              pending_votings: null,
+              past_votings: null,
+              form: {
+                  username: '',
+                  password: ''
+              },
+              alertShow: false,
+              alertMsg: "",
+              alertLvl: "info"
+          },
+          beforeMount() {
+              this.init()
+          },
+          methods: {
+              init() {
+                  var cookies = document.cookie.split("; ");
+                  cookies.forEach((c) => {
+                      var cs = c.split("=");
+                      if (cs[0] == 'decide' && cs[1]) {
+                          this.token = cs[1];
+                          this.getUser();
+                      }
+                  });
+              },
+              postData(url, data) {
+                  var fdata = {
+                      body: JSON.stringify(data),
+                      headers: {
+                          'content-type': 'application/json',
+                      },
+                      method: 'POST',
+                  };
+
+                  if (this.token) {
+                      fdata.headers['Authorization'] = 'Token ' + this.token;
+                  }
+
+                  return fetch(url, fdata)
+                      .then(response => {
+                          if (response.status === 200) {
+                              return response.json();
+                          } else {
+                              return Promise.reject(response.statusText);
+                          }
+                      });
+              },
+              onSubmitLogin(evt) {
+                  evt.preventDefault();
+                  this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                      .then(data => {
+                          document.cookie = 'decide='+data.token+'; path=/; max-age=7200;';
+                          this.token = data.token;
+                          this.getUser();
+                      })
+                      .catch(error => {
+                          this.showAlert("danger", 'Error: ' + error);
+                      });
+              },
+              getUser(evt) {
+                  var data = {token: this.token};
+                  this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
+                      .then(data => {
+                          this.user = data;
+                          if(this.user.style == 'C')
+                            setUserStyle("{% static 'styles/C.css' %}");
+                          else
+                            setUserStyle("{% static 'styles/N.css' %}");
+
+                          this.getVotings();
+                      })
+                      .catch(error => {
+                          this.showAlert("danger", 'Error: ' + error);
+                      });
+              },
+              getVotings(evt) {
+                  var data = {token: this.token};
+                  this.postData("{% url "gateway" "voting" "/getuser/" %}", data)
+                      .then(data => {
+                          this.pending_votings = data['pending_votings'];
+                          this.past_votings = data['past_votings'];
+                      })
+              },
+              onChangeStyle(newstyle) {
+                  var data = {token: this.token, style: newstyle};
+                  this.postData("{% url "gateway" "authentication" "/changestyle/" %}", data)
+                      .then(data => {
+                          this.getUser();
+                      })
+                      .catch(error => {
+                          this.showAlert("danger", '{% trans "Error: " %}' + error);
+                      });
+              },
+              decideLogout(evt) {
+                var opcion = confirm("Are you sure you want to log out?");
+                  if (opcion == true) {
+                    alert ("You have successfully logged out");
+                    evt.preventDefault();
+                    var data = {token: this.token};
+                    this.postData("/gateway/authentication/logout/", data);
+                    this.token = null;
+                    this.user = null;
+                    document.cookie = 'decide=; path=/;';
+                    return true;
+                  } else {
+                    return false;
+                }
+              },
+              showAlert(lvl, msg) {
+                  this.alertLvl = lvl;
+                  this.alertMsg = msg;
+                  this.alertShow = true;
+              }
+          },
+      })
+  </script>
+  <script>
+    function openPopUp() {
+      overlay = document.getElementById('overlay');
+      popup = document.getElementById('popup');
+      overlay.classList.add('active');
+      popup.classList.add('active');
+
+      document.getElementById('username').value = "";
+      document.getElementById('password').value = "";
+    }
+    function closePopUp(){
+      overlay.classList.remove('active');
+      popup.classList.remove('active');
+    }
+  </script>
+</body>
+{% endblock %}

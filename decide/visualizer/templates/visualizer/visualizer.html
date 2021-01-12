@@ -7,6 +7,8 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <script src="{% static 'js/zoom.js' %}"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -14,6 +16,10 @@
         <!-- Navbar -->
         <b-navbar type="dark" variant="secondary">
             <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+            <div id="buttons_zoom"> 
+                <button id="zoomIn" onclick="zoomIn()">Zoom<br>In</button> 
+                <button id="zoomOut" disabled="disabled" onclick="zoomOut()">Zoom<br>Out</button>
+            </div>
         </b-navbar>
 
         <div class="voting container">

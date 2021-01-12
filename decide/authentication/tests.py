@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
-from django.contrib.auth.models import User
+from .models import UserProfile
 from rest_framework.authtoken.models import Token
 
 from base import mods
@@ -13,11 +13,11 @@ class AuthTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         mods.mock_query(self.client)
-        u = User(username='voter1')
+        u = UserProfile(username='voter1', sex='M', style='N')
         u.set_password('123')
         u.save()
 
-        u2 = User(username='admin')
+        u2 = UserProfile(username='admin', sex='F', style='N')
         u2.set_password('admin')
         u2.is_superuser = True
         u2.save()
@@ -105,6 +105,26 @@ class AuthTestCase(APITestCase):
         response = self.client.post('/authentication/register/', token, format='json')
         self.assertEqual(response.status_code, 400)
 
+    def test_register_bad_request_sex_required(self):
+        data = {'username': 'admin', 'password': 'admin' }
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json()
+
+        token.update({'username': 'user1', 'password': 'pwd1', 'style': 'N'})
+        response = self.client.post('/authentication/register/', token, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_register_bad_request_style_required(self):
+        data = {'username': 'admin', 'password': 'admin' }
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json()
+
+        token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'M'})
+        response = self.client.post('/authentication/register/', token, format='json')
+        self.assertEqual(response.status_code, 400)
+
     def test_register_user_already_exist(self):
         data = {'username': 'admin', 'password': 'admin'}
         response = self.client.post('/authentication/login/', data, format='json')
@@ -121,7 +141,7 @@ class AuthTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
         token = response.json()
 
-        token.update({'username': 'user1', 'password': 'pwd1'})
+        token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'M', 'style': 'N'})
         response = self.client.post('/authentication/register/', token, format='json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(

@@ -1,0 +1,90 @@
+
+body,h3,a{
+    font-size:1em;
+}
+
+h1{
+    font-size:1.4285em;
+}
+
+h2{
+font-size:1.1428em;
+}
+ p,td,span{
+     font-size:0.9285em;
+ }
+#zoomIn,#zoomOut{
+    border-radius: .3rem;
+    background-color:deepskyblue;
+    border-color: deepskyblue;
+    color:white;
+
+}
+.colMS {
+    background-color:#f8b679 !important;
+}
+
+h1{
+    color: black !important;
+    font-family: serif !important;
+}
+.dashboard #header{ 
+    background-color: #e7901f !important;
+}
+
+.module caption{
+    background: #e7901f !important;
+}
+
+#container{
+    background-color: #f8b679 !important ;
+}
+
+
+footer{
+    background-color: #f8b679 !important ;
+}
+
+.object-tools .addlink{
+    background-color: #e7901f !important;
+}
+
+#content-main a{
+    color: black !important;
+}
+.breadcrumbs{
+    background-color: #e7901f !important;
+
+}
+.app-authtoken #header{
+    background-color: #e7901f !important;
+
+}
+#branding{
+    display:inline-flex;
+}
+.required{
+    font-size: 0.875em;
+}
+#id_username,#id_password{
+    font-size: 1em;
+}
+#buttons_zoom{
+    margin:auto;
+}
+.d-block{
+    font-size: 1.36em;
+}
+#username,#password{
+    font-size:1em;
+}
+.closePopUp {
+    float: right;
+}
+.popup h4 {
+    color: #0a1b2b !important;
+    font-family: serif !important;
+    font-size: 36px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
