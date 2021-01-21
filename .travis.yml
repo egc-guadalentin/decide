@@ -78,6 +78,12 @@ jobs:
       - coverage run --branch --source=. ./manage.py test voting/ --keepdb --with-xunit
       - coverage xml
       - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test decide/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+
 notifications:
   email:
     recipients:
