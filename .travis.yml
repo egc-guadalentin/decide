@@ -31,11 +31,58 @@ install:
   - tar xfz geckodriver-v0.27.0-linux64.tar.gz
   - sudo mv -f geckodriver /usr/bin
   - sudo chmod +x /usr/bin/geckodriver
-script:
-  - cd decide
-  - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
-  - coverage xml
-  - python-codacy-coverage -r coverage.xml
+jobs:
+  include:
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test authentication/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test base/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test booth/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test census/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test mixnet/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test postproc/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test store/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test visualizer/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test voting/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
+    - script:
+      - cd decide
+      - coverage run --branch --source=. ./manage.py test decide/ --keepdb --with-xunit
+      - coverage xml
+      - python-codacy-coverage -r coverage.xml
 notifications:
   email:
     recipients:
