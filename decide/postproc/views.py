@@ -128,7 +128,8 @@ class PostProcView(APIView):
         zero_votes = True
 
         for i in range(0, len(options)):
-            votes.append(options[i]['votes'])
+            quotient = 1.4 if type == "SAINTE_LAGUE" else 1
+            votes.append(options[i]['votes']/quotient)
             points_for_opt.append(0)
             if zero_votes is True and options[i]['votes'] != 0:
                 zero_votes = False
