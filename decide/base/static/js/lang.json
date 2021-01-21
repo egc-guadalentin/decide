@@ -26,5 +26,17 @@
       "resultsId":"My votings results",
       "welcomeID":"Welcome"
 
+    },
+    "fr": {
+      "prueba1": "C'est un test",
+      "prueba2": "C'est un texte en français",
+      "welcome": "Bienvenue sur Decide, une plateforme de vote en ligne. Ceci est la page principale. Ici, vous pouvez vous connecter à votre compte et appuyer sur le stand pour voter ou sur le visualiseur pour voir les résultats.",
+      "questionHelp": "Vous avez besoin d'aide sur l'accessibilité?",
+      "loginbuttom": "Login",
+      "user": "Nom d'utilisateur",
+      "pass": "Mot de passe",
+      "pendingId": "Mes votes en attente",
+      "resultsId": "Résultats des votes passés",
+      "welcomeID": "Bienvenue"
     }
   }
