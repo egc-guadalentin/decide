@@ -132,6 +132,7 @@ class AuthTestCase(APITestCase):
 
         token.update({'username': 'user1', 'password': 'pwd1', 'sex': 'NB', 'style': 'N'})
         response = self.client.post('/authentication/register/', token, format='json')
+        self.assertEqual(response.status_code, 400)
 
     def test_changestyle_inexistent_style(self):
         data = {'username': 'voter1', 'password': '123'}
