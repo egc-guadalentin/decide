@@ -885,7 +885,7 @@
     "type": "BORDA",
     "options": [
       {
-        "votes": 4,
+        "votes": [2,3,5],
         "number": 3,
         "option": "Opcion 3",
         "points": 1,
@@ -896,7 +896,7 @@
         "question_id": 10
       },
       {
-        "votes": 4,
+        "votes": [3,2,5],
         "number": 2,
         "option": "Opcion 2",
         "points": 1,
@@ -907,7 +907,7 @@
         "question_id": 10
       },
       {
-        "votes": 3,
+        "votes": [1,3,5],
         "number": 1,
         "option": "Opcion 1",
         "points": 1,
