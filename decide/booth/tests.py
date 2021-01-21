@@ -18,7 +18,7 @@ from voting.models import Voting, Question, QuestionOption
 from mixnet.models import Auth
 from authentication.models import UserProfile
 from census.models import Census
-from .views import check_unresolved_post_data, is_future_date
+from .views import check_unresolved_post_data, is_future_date, get_participation_percentage
 from voting.tests import VotingTestCase
 from mixnet.models import Auth
 from store.models import Vote
@@ -443,3 +443,13 @@ class DashboardTest(TestCase):
         response = self.client.get(reverse('dashboard'), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['no_vot_dis'], True)
+
+    def test_get_participation_percentage(self):
+        x = [0,1,2,1,0,1,0,0,0,2,1,0]
+        y = [0,2,4,0,0,1,1,1,0,2,4,0]
+
+        res = get_participation_percentage(x, y)
+
+        self.assertEqual(res[0], 0)
+        self.assertEqual(res[3], 100)
+        self.assertEqual(res[10], 25)

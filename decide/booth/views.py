@@ -32,7 +32,7 @@ class LogoutView(TemplateView):
             del self.request.session['username']
 
         return context
-    
+
     def render_to_response(self, context, **response_kwargs):
         response = super(LogoutView, self).render_to_response(context, **response_kwargs)
         response.delete_cookie('decide')
@@ -61,6 +61,7 @@ def available_votings_user(list_vid, voter_id):
 
 def last_12_months_votings_user(list_vid):
     months = [0]*12
+    participations = [0]*12
     str_months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
 
     today = datetime.datetime.now()
@@ -71,19 +72,40 @@ def last_12_months_votings_user(list_vid):
     end = today.replace(minute=0, hour=0, second=0, microsecond=0, day=1)
 
     votaciones_meses = Voting.objects.filter(id__in=list_vid).exclude(start_date__isnull=True).filter(start_date__range=(start, end)).annotate(month=ExtractMonth('start_date')).values('month').annotate(votaciones=Count('id'))
+    participaciones_mes = Vote.objects.filter(voting_id__in=list_vid).filter(voted__range=(start, end)).annotate(month=ExtractMonth('voted')).values('month').annotate(participaciones=Count('id'))
 
     for v in votaciones_meses:
         months[v['month']-1] = v['votaciones']
+
+    for p in participaciones_mes:
+        participations[p['month']-1] = p['participaciones']
 
     second_counter_months = months[:last_month]
     first_counter_months = months[last_month:12]
     counter_months = first_counter_months + second_counter_months
 
+    second_counter_participations_months = participations[:last_month]
+    first_counter_participations_months = participations[last_month:12]
+    counter_participations_months = first_counter_participations_months + second_counter_participations_months
+
+    participations_months_percentage = get_participation_percentage(counter_participations_months, counter_months)
+
     second_str_months = str_months[:last_month]
     first_str_months = str_months[last_month:12]
     str_months = first_str_months + second_str_months
 
-    return counter_months, str_months
+    return counter_months, str_months, participations_months_percentage
+
+def get_participation_percentage(counter_participations_months, counter_months):
+    res = []
+
+    for x, y in zip(counter_participations_months, counter_months):
+        if y == 0:
+            res.append(x * 100)
+        else:
+            res.append(x / y * 100)
+
+    return res
 
 def votings_user_by_type(list_vid):
     votings_by_type = []
@@ -139,7 +161,7 @@ def dashboard_details(voter_id):
         list_vid.append(vid)
 
     available_votings = available_votings_user(list_vid, voter_id)
-    votings_by_month, months = last_12_months_votings_user(list_vid)
+    votings_by_month, months, participation_by_month = last_12_months_votings_user(list_vid)
     votings_by_type = votings_user_by_type(list_vid)
 
     approved_suggestions = suggestions_approved(voter_id)
@@ -147,6 +169,7 @@ def dashboard_details(voter_id):
 
     context['vot_dis'] = available_votings
     context['votaciones_por_meses'] = votings_by_month
+    context['participation_by_month'] = participation_by_month
     context['months'] = months
     context['tipo_votaciones'] = votings_by_type
     context['approved_suggestions'] = approved_suggestions
