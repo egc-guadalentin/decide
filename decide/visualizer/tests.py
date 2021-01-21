@@ -553,3 +553,27 @@ class Identity_chart_view_test_selenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
         self.driver.get(f'{self.live_server_url}/visualizer/100/')
+
+    def test_voting_borda_positive(self):
+        response = self.client.get('/visualizer/20/')
+        postproc_type = response.context["postproc_type"]
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(postproc_type, "BORDA")
+
+    def test_voting_borda_negative(self):
+        response = self.client.get('/visualizer/24/')
+        postproc_type = response.context["postproc_type"]
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(postproc_type, "BORDA")
+
+    def test_show_borda_chart(self):
+        self.driver.get(f'{self.live_server_url}/admin/login/?next=/admin/')
+        self.driver.find_element(By.ID, "id_username").click()
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").click()
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/visualizer/')
+        self.driver.find_element(By.XPATH, "//a[contains(@href, \'20\')]").click()
+        elements = self.driver.find_elements(By.ID, "borda_chart")
+        assert len(elements) > 0

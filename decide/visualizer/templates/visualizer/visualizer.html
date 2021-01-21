@@ -25,9 +25,13 @@
                             <canvas id="genderCensusChart" class="bg-light"></canvas>
                         </div>
                     </div>
-                    {% elif postproc_type == 'IDENTITY' or postproc_type == 'BORDA'%}
+                    {% elif postproc_type == 'IDENTITY'%}
                         <div style="width: 90%; margin: 0 auto; position: relative;">
                             <canvas id="identityChart"></canvas>
+                        </div>
+                    {% elif postproc_type == 'BORDA' %}
+                        <div style="width: 100%; margin: 0 auto; position: relative;">
+                            <canvas id="borda_chart"></canvas>
                         </div>
                     {% else %}
                         <div style="width: 100%; margin: 0 auto; position: relative;">
@@ -309,6 +313,55 @@
 
         var chart = new ApexCharts(document.querySelector("#resultsChart"), options);
         chart.render();
+</script>
+
+<script>
+        var ctx = document.getElementById('borda_chart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{labels|safe}},
+                datasets: [
+                    {
+                        label: 'Postproduccion',
+                        backgroundColor: 'rgba(0, 143, 251, 0.85)',
+                        borderColor: 'rgba(0, 143, 251, 0.85)',
+                        borderWidth: 1,
+                        data: {{postpro|safe}}
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                legend: {
+                    position: "left"
+                },
+                title: {
+                    display: true,
+                    fontSize: 30,
+                    padding: 30,
+                    text: "Number of votes according to gender and options",
+                    fontColor:  'rgb(38, 50, 56)'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                        beginAtZero: true,
+                        stepSize: 1
+                        }
+                    }]
+                },
+                layout: {
+                    padding: {
+                        left: 50,
+                        right: 0,
+                        top: 70,
+                        bottom: 70
+                    }
+                }
+            }
+        });
 </script>
 
 {% endblock %}

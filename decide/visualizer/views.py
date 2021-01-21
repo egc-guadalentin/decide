@@ -37,12 +37,12 @@ class VisualizerView(TemplateView):
             if voting['end_date'] != None and voting['postproc'][0] != None:
                 postproc = voting['postproc'][0]
 
-                if postproc['type'] == 'IDENTITY' or postproc['type'] == 'BORDA':
+                if postproc['type'] == 'IDENTITY':
                     self.statistics_identity(context, voting)
-
+                elif postproc['type'] == 'BORDA':
+                    self.statistics_borda(context, voting)
                 elif postproc['type'] == 'EQUALITY':
                     self.statistics_equality(context, voting)
-
                 else:
                     self.statistics_points(context, voting)
             
@@ -56,6 +56,27 @@ class VisualizerView(TemplateView):
         except:
             raise Http404
 
+        return context
+
+    def statistics_borda(self, context, voting):
+        labels = []
+        postproc = []
+        votes = []
+        points = voting['postproc'][0]['options'][0]['points']
+        question = voting['postproc'][0]['options'][0]['question']
+        type = voting['postproc'][0]["type"]
+        name = voting["name"]
+        desc = voting["desc"]
+        for option in voting['postproc'][0]['options']:
+            labels.append(option['option'])
+            postproc.append((option['postproc']))
+            votes.append(option['votes'])
+
+        context['labels'] = labels
+        context['postpro'] = postproc
+        context['votes'] = votes
+        context['name'] = name
+        context['desc'] = desc
         return context
 
     def statistics_equality(self, context, voting):
